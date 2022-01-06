@@ -1,0 +1,82 @@
+// Redirects links from /g page to /g/group-slug/messages
+<script type="text/x-handlebars" data-template-name="/connectors/group-index-box-after/link-to-group-inbox"> </script>
+<script type="text/discourse-plugin" version="0.8">
+  const DiscourseURL = require("discourse/lib/url").default;
+  api.registerConnectorClass('group-index-box-after', 'link-to-group-inbox', {
+    setupComponent(args) {
+      const group = args.model;
+
+       if (group.is_group_user && group.has_messages) {
+         const groupLink = document.querySelector(`.group-box.${group.name}`);
+         const newHref = `/g/${group.name}/messages`;
+
+         // updates browser title and handle new tab
+         groupLink.href = newHref;
+
+         // redirect the link
+         groupLink.addEventListener("click", (event) => {
+            DiscourseURL.routeTo(newHref);
+            event.preventDefault();
+         }, {once: true})
+       }
+     }
+  });
+</script>
+
+// Redirects links from group cards to /g/group-slug/messages
+<script type="text/discourse-plugin" version="0.8">
+  const discourseComputed = require("discourse-common/utils/decorators").default;
+  api.modifyClass("component:group-card-contents", {
+    @discourseComputed("group")
+    groupPath(group) {
+      let groupURL = this._super(...arguments);
+      if (group.is_group_user && group.has_messages) {
+        groupURL = `${groupURL}/messages/`;
+      }
+      return groupURL;
+    }
+  });  
+  const DiscourseURL = require("discourse/lib/url").default;
+  const { groupPath } = require("discourse/lib/url");
+  const { action } = require("@ember/object");
+
+  api.modifyClass("controller:user-card", {
+    @action
+    showGroup(group) {
+      this._super(...arguments);
+      let groupURL = groupPath(group.name);
+      if (group.is_group_user && group.has_messages) {
+        groupURL = `${groupURL}/messages/`;
+      }
+      DiscourseURL.routeTo(groupURL);
+    }
+  });
+</script>
+
+// Redirects links from @group-slug in PM contributor box to /g/group-slug/messages
+<script type="text/discourse-plugin" version="0.8">
+  const user = api.getCurrentUser();
+
+  if (!user) {
+    return;
+  }
+
+  const userGroups = user.groups.map(group => group.name);
+
+  api.reopenWidget("pm-map-user-group", {
+    transform(attrs) {
+
+      const group = attrs.group;
+      const isGroupUser = Object.values(userGroups).includes(group.name);
+
+      // {href: "/g/foo"};
+      let groupURL = this._super(...arguments);
+
+      if (isGroupUser && group.has_messages) {
+        groupURL.href = `${groupURL.href}/messages/`;
+      }
+
+      return groupURL;
+    }
+  });
+</script>
