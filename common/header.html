@@ -1,6 +1,6 @@
-// Redirects links from /g page to /g/group-slug/messages
 <script type="text/x-handlebars" data-template-name="/connectors/group-index-box-after/link-to-group-inbox"> </script>
-<script type="text/discourse-plugin" version="0.8">
+
+<script type="text/discourse-plugin" version="0.8"> // Redirects links from /g page to /g/group-slug/messages
   const DiscourseURL = require("discourse/lib/url").default;
   api.registerConnectorClass('group-index-box-after', 'link-to-group-inbox', {
     setupComponent(args) {
@@ -23,8 +23,8 @@
   });
 </script>
 
-// Redirects links from group cards to /g/group-slug/messages
-<script type="text/discourse-plugin" version="0.8">
+
+<script type="text/discourse-plugin" version="0.8"> // Redirects links from group cards to /g/group-slug/messages
   const discourseComputed = require("discourse-common/utils/decorators").default;
   api.modifyClass("component:group-card-contents", {
     @discourseComputed("group")
@@ -53,8 +53,8 @@
   });
 </script>
 
-// Redirects links from @group-slug in PM contributor box to /g/group-slug/messages
-<script type="text/discourse-plugin" version="0.8">
+
+<script type="text/discourse-plugin" version="0.8"> // Redirects links from @group-slug in PM contributor box to /g/group-slug/messages
   const user = api.getCurrentUser();
 
   if (!user) {
