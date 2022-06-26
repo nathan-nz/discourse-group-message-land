@@ -27,6 +27,7 @@
 <script type="text/discourse-plugin" version="0.8"> // Redirects links from group cards to /g/group-slug/messages
   const discourseComputed = require("discourse-common/utils/decorators").default;
   api.modifyClass("component:group-card-contents", {
+    pluginId: 'discourse-group-messages-land',
     @discourseComputed("group")
     groupPath(group) {
       let groupURL = this._super(...arguments);
@@ -41,6 +42,7 @@
   const { action } = require("@ember/object");
 
   api.modifyClass("controller:user-card", {
+    pluginId: 'discourse-group-messages-land',
     @action
     showGroup(group) {
       this._super(...arguments);
